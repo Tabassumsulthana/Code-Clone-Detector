@@ -1,25 +1,23 @@
 import streamlit as st
 import backend
+import matplotlib.pyplot as plt
 
-# --------------------------------
+# -----------------------------------------------------------------
 # PAGE CONFIGURATION
-# --------------------------------
-
+# -----------------------------------------------------------------
 st.set_page_config(
     page_title="Code Clone Detector",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    page_icon="🔍",
+    layout="wide"
 )
 
-# --------------------------------
+# -----------------------------------------------------------------
 # CUSTOM CSS DESIGN
-# --------------------------------
-
+# -----------------------------------------------------------------
 st.markdown("""
 <style>
 
 /* REMOVE TOP WHITE HEADER STRIP */
-
 header[data-testid="stHeader"],
 [data-testid="stDecoration"],
 [data-testid="stToolbar"],
@@ -30,7 +28,6 @@ hr {
 }
 
 /* REMOVE TOP EMPTY SPACE */
-
 .stAppViewContainer {
     padding-top: 0px !important;
     margin-top: 0px !important;
@@ -45,7 +42,6 @@ section.main {
 }
 
 /* GLOBAL BACKGROUND */
-
 html, body, .stApp {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     background: linear-gradient(
@@ -57,7 +53,6 @@ html, body, .stApp {
 }
 
 /* REMOVE DEFAULT CONTAINER BACKGROUNDS */
-
 [data-testid="stMain"],
 [data-testid="stAppViewContainer"],
 [data-testid="stMainBlockContainer"] {
@@ -65,7 +60,6 @@ html, body, .stApp {
 }
 
 /* CENTERED HEADER CARD */
-
 .centered-header-block {
     display: flex;
     flex-direction: column;
@@ -75,25 +69,23 @@ html, body, .stApp {
     width: 100%;
     padding: 15px 20px 25px !important;
     margin: 0 auto 20px !important;
-    background: rgba(255,255,255,0.45);
+    background: rgba(255, 255, 255, 0.45);
     border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.6);
-    box-shadow: 0 4px 30px rgba(0,0,0,0.03);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
 }
 
 /* MAIN APPLICATION HEADING */
-
 .main-heading {
     color: #585B7A !important;
     font-size: 60px !important;
     font-weight: 800 !important;
     margin: 0px 0px 14px 0px !important;
     letter-spacing: -1px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.06);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 /* SUB HEADING */
-
 .sub-heading-sentence {
     color: #C070C5 !important;
     font-size: 24px !important;
@@ -102,24 +94,21 @@ html, body, .stApp {
 }
 
 /* COLUMN SPACING */
-
 .column-wrapper {
     margin-top: 30px !important;
     margin-bottom: 25px !important;
 }
 
 /* UPLOADER HEADINGS */
-
 .column-title-sentence {
     color: #1FB3B7 !important;
     font-size: 26px !important;
     font-weight: 800 !important;
     margin-bottom: 18px !important;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.03);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 /* RESULTS HEADING */
-
 .results-section-heading {
     color: #C070C5 !important;
     font-size: 36px !important;
@@ -129,14 +118,12 @@ html, body, .stApp {
 }
 
 /* SCAN BUTTON */
-
 div.stButton > button:first-child {
     background: linear-gradient(
         135deg,
         #FFAB73 0%,
         #FF884D 100%
     ) !important;
-
     color: #FFFFFF !important;
     border: none !important;
     font-size: 22px !important;
@@ -144,45 +131,40 @@ div.stButton > button:first-child {
     padding: 18px 45px !important;
     border-radius: 14px !important;
     width: 100% !important;
-    box-shadow: 0 8px 20px rgba(255,136,77,0.35);
+    box-shadow: 0 8px 20px rgba(255, 136, 77, 0.35);
     transition: all 0.25s ease-in-out !important;
     cursor: pointer;
     margin-top: 40px !important;
 }
 
 /* BUTTON HOVER EFFECT */
-
 div.stButton > button:first-child:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 10px 28px rgba(255,136,77,0.5) !important;
+    box-shadow: 0 10px 28px rgba(255, 136, 77, 0.5) !important;
 }
 
 /* UPLOADER BOX DESIGN */
-
 div[data-testid="stFileUploader"] section {
     background-color: #FFFFFF !important;
     border: 3px dashed #1FB3B7 !important;
     border-radius: 14px !important;
     padding: 20px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* UPLOADER HOVER EFFECT */
-
 div[data-testid="stFileUploader"] section:hover {
     border-color: #C070C5 !important;
 }
 
 /* FILE UPLOADER TEXT */
-
 div[data-testid="stFileUploader"] {
     color: #585B7A !important;
 }
 
 /* CODE TITLE TAG */
-
 .code-title-tag {
-    background-color: rgba(31,179,183,0.15);
+    background-color: rgba(31, 179, 183, 0.15);
     color: #585B7A;
     padding: 8px 14px;
     border-radius: 8px;
@@ -190,29 +172,45 @@ div[data-testid="stFileUploader"] {
     font-weight: 700;
     display: inline-block;
     margin-bottom: 12px;
-    border: 2px solid rgba(31,179,183,0.4);
+    border: 2px solid rgba(31, 179, 183, 0.4);
 }
 
 /* RESULT CONTAINERS */
-
 div[data-testid="stMetric"] {
-    background: rgba(255,255,255,0.75);
+    background: rgba(255, 255, 255, 0.75);
     padding: 18px;
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.8);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* CUSTOM HIGHLIGHTED CODE BOX */
+.code-inspector-container {
+    background-color: #1E1E1E;
+    color: #D4D4D4;
+    padding: 15px;
+    border-radius: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    border: 1px solid #3C3C3C;
+}
+.matching-line {
+    background-color: rgba(255, 165, 0, 0.25);
+    border-left: 4px solid #FFAB73;
+    display: block;
+    padding-left: 4px;
 }
 
 /* RESPONSIVE HEADING */
-
 @media screen and (max-width: 768px) {
     .main-heading {
         font-size: 36px !important;
     }
-
     .sub-heading-sentence {
         font-size: 17px !important;
     }
-
     .column-title-sentence {
         font-size: 20px !important;
     }
@@ -221,12 +219,9 @@ div[data-testid="stMetric"] {
 </style>
 """, unsafe_allow_html=True)
 
-
-# --------------------------------
+# -----------------------------------------------------------------
 # VISUAL UI HEADER
-# --------------------------------
-
-
+# -----------------------------------------------------------------
 st.markdown(
     '<div class="centered-header-block">'
     '<h1 class="main-heading">🔵 Code Clone Detector</h1>'
@@ -238,19 +233,16 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --------------------------------
+# -----------------------------------------------------------------
 # UPLOADER SECTIONS LAYOUT
-# --------------------------------
-
+# -----------------------------------------------------------------
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
-
     st.markdown(
         '<p class="column-title-sentence">Primary Script File</p>',
         unsafe_allow_html=True
     )
-
     uploaded_file1 = st.file_uploader(
         "Upload primary source target",
         type=["py"],
@@ -258,14 +250,11 @@ with col1:
         label_visibility="collapsed"
     )
 
-
 with col2:
-
     st.markdown(
         '<p class="column-title-sentence">Secondary Script File</p>',
         unsafe_allow_html=True
     )
-
     uploaded_file2 = st.file_uploader(
         "Upload reference evaluation asset",
         type=["py"],
@@ -273,142 +262,123 @@ with col2:
         label_visibility="collapsed"
     )
 
-
-# --------------------------------
+# -----------------------------------------------------------------
 # SCAN TRIGGER BUTTON
-# --------------------------------
-
+# -----------------------------------------------------------------
 run_trigger = st.button(
-    "🚀 Execute Structural Similarity Scan Check",
+    "⚡ Execute Structural Similarity Scan check",
     type="primary",
     use_container_width=True
 )
 
-
-# --------------------------------
+# -----------------------------------------------------------------
 # RUNTIME BACKEND HANDSHAKE
-# --------------------------------
-
+# -----------------------------------------------------------------
 if run_trigger:
-
     if uploaded_file1 is not None and uploaded_file2 is not None:
-
         try:
-
             # READ UPLOADED FILES
-
             raw_code_data1 = uploaded_file1.getvalue().decode("utf-8")
             raw_code_data2 = uploaded_file2.getvalue().decode("utf-8")
-
-            # CALCULATE SIMILARITY
-
-            calculated_score = backend.calculate_similarity(
+            
+            # CALCULATE SIMILARITY & METRICS
+            calculated_score, matching_blocks, identical_ratio, unique_ratio = backend.calculate_similarity(
                 raw_code_data1,
                 raw_code_data2
             )
-
-            # --------------------------------
+            
             # RENDER RESULTS LAYOUT
-            # --------------------------------
-
             st.markdown(
                 '<h2 class="results-section-heading">'
                 '📊 Evaluation Report</h2>',
                 unsafe_allow_html=True
             )
-
-            # DISPLAY SIMILARITY SCORE
-
-            st.metric(
-                label="Structural Similarity Score",
-                value=f"{calculated_score:.2f}%"
-            )
-
-            # --------------------------------
-            # RESULT CLASSIFICATION
-            # --------------------------------
-
-            if calculated_score >= 70.0:
-
-                st.error(
-                    f"⚠️ Structural Congruence Warning: "
-                    f"Match Matrix registered at "
-                    f"{calculated_score:.2f}%"
+            
+            # NEW: SIMILARITY PERCENTAGE DASHBOARD WITH VISUAL CHART
+            dash_col1, dash_col2 = st.columns(2)
+            
+            with dash_col1:
+                st.metric(
+                    label="Structural Similarity Score",
+                    value=f"{calculated_score:.2f}%"
                 )
+                
+                # RESULT CLASSIFICATION
+                if calculated_score >= 70.0:
+                    st.error(
+                        f"⚠️ Structural Congruence Warning: "
+                        f"Match Matrix registered at {calculated_score:.2f}%"
+                    )
+                    st.warning(
+                        "Assessment Warning: High probability "
+                        "of logical duplication/plagiarism identified."
+                    )
+                else:
+                    st.success(
+                        f"✅ Structural Originality Verified: "
+                        f"Match Matrix registered at {calculated_score:.2f}%"
+                    )
+                    st.info(
+                        "Assessment Clearance: Source script items "
+                        "demonstrate relatively low structural similarity."
+                    )
+            
+            with dash_col2:
+                # Matplotlib Pie Chart Dashboard implementation
+                fig, ax = plt.subplots(figsize=(4, 3))
+                fig.patch.set_facecolor('none')
+                ax.set_facecolor('none')
+                
+                labels = ['Matching Blocks', 'Unique Structure']
+                sizes = [identical_ratio * 100, unique_ratio * 100]
+                colors = ['#FF884D', '#1FB3B7']
+                
+                # Generate simple donut dashboard breakdown chart
+                ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, 
+                       textprops={'color': "#585B7A", 'weight': 'bold'})
+                ax.axis('equal')  
+                st.pyplot(fig)
 
-                st.warning(
-                    "Assessment Warning: High probability "
-                    "of logical duplication/plagiarism identified."
-                )
-
-            else:
-
-                st.success(
-                    f"✅ Structural Originality Verified: "
-                    f"Match Matrix registered at "
-                    f"{calculated_score:.2f}%"
-                )
-
-                st.info(
-                    "Assessment Clearance: Source script items "
-                    "demonstrate relatively low structural similarity."
-                )
-
-            # --------------------------------
-            # CODE INSPECTOR PREVIEW PANEL
-            # --------------------------------
-
+            # NEW: SIDE-BY-SIDE HIGHLIGHTED COMPARISON VIEW PANEL
             st.markdown(
                 '<h2 class="results-section-heading">'
-                '🔬 Granular Workspace Inspection</h2>',
+                '🔍 Side-by-Side Highlighted Comparison</h2>',
                 unsafe_allow_html=True
             )
-
+            
             view_col1, view_col2 = st.columns(2)
-
+            
+            lines1 = raw_code_data1.splitlines()
+            lines2 = raw_code_data2.splitlines()
+            
             with view_col1:
-
-                st.markdown(
-                    f'<span class="code-title-tag">'
-                    f'Target Reference A: {uploaded_file1.name}'
-                    f'</span>',
-                    unsafe_allow_html=True
-                )
-
-                st.code(
-                    raw_code_data1,
-                    language="python"
-                )
-
+                st.markdown(f'<span class="code-title-tag">Target Reference A: {uploaded_file1.name}</span>', unsafe_allow_html=True)
+                html_output1 = '<div class="code-inspector-container">'
+                for idx, line in enumerate(lines1):
+                    is_match = any(line.strip() in backend.preprocess_code(raw_code_data2) and line.strip() != "" for line in [line])
+                    class_name = ' class="matching-line"' if is_match else ''
+                    html_output1 += f'<span{class_name}>{idx+1}: {line}</span>\n'
+                html_output1 += '</div>'
+                st.markdown(html_output1, unsafe_allow_html=True)
+                
             with view_col2:
-
-                st.markdown(
-                    f'<span class="code-title-tag">'
-                    f'Target Reference B: {uploaded_file2.name}'
-                    f'</span>',
-                    unsafe_allow_html=True
-                )
-
-                st.code(
-                    raw_code_data2,
-                    language="python"
-                )
+                st.markdown(f'<span class="code-title-tag">Target Reference B: {uploaded_file2.name}</span>', unsafe_allow_html=True)
+                html_output2 = '<div class="code-inspector-container">'
+                for idx, line in enumerate(lines2):
+                    is_match = any(line.strip() in backend.preprocess_code(raw_code_data1) and line.strip() != "" for line in [line])
+                    class_name = ' class="matching-line"' if is_match else ''
+                    html_output2 += f'<span{class_name}>{idx+1}: {line}</span>\n'
+                html_output2 += '</div>'
+                st.markdown(html_output2, unsafe_allow_html=True)
 
         except UnicodeDecodeError:
-
             st.error(
                 "Unable to read the uploaded files. "
                 "Please upload valid UTF-8 Python files."
             )
-
         except Exception as e:
-
-            st.error(
-                f"An unexpected error occurred: {e}"
-            )
-
+            st.error(f"An unexpected error occurred: {e}")
     else:
-
         st.error(
             "⚠️ Operation Aborted: Please upload both "
             "Python files before starting scan execution."
